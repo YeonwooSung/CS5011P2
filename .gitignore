@@ -1,2 +1,3 @@
 .dist
 *.class
+.DS_Store
