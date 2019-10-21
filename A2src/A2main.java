@@ -1,6 +1,5 @@
 import java.util.ArrayList;
 
-
 public class A2main {
 	private static void printErrorMessageForInvalidID(String id) {
 		System.out.println("Invalid ID - " + id);
@@ -185,7 +184,7 @@ public class A2main {
 		/* use if-else statement to check the agent type */
 
 		if (agentType.equals("RPX")) {
-			System.out.println("Randome Probe\n");
+			System.out.println("Randome Probe (RPX)\n");
 			RPX rpx = new RPX(board);
 
 			int total = size * size;
@@ -214,7 +213,7 @@ public class A2main {
 			}
 
 		} else if (agentType.equals("SPX")) {
-			System.out.println("Single point strategy for hexagonal worlds\n");
+			System.out.println("Single point strategy for hexagonal worlds (SPX)\n");
 			SPX spx = new SPX(board);
 
 			int centerX = size / 2;
@@ -250,6 +249,7 @@ public class A2main {
 
 				int newCounter = spx.getTotalCount();
 
+				// check if no cells are uncovered
 				if (newCounter == counter) {
 					do {
 						int x = getRandomIntegerBetweenRange(0, size - 1); //get random integer
@@ -278,7 +278,60 @@ public class A2main {
 			}
 
 		} else if (agentType.equals("SATX")) {
-			//TODO
+			System.out.println("Satisfiability Strategy for hexagonal worlds (SATX)\n");
+			SATX satx = new SATX(board);
+
+			int centerX = size / 2;
+			int centerY = centerX;
+
+			System.out.println("Probe 0 0");
+			satx.probed[0][0] = true;
+
+			System.out.println("Probe " + centerX + " " + centerY);
+			satx.probed[centerY][centerX] = true;
+
+			int counter = 0;
+
+			// use the while loop to loop until the Single Point Strategy Agent probed all cells
+			while (!satx.inspectedAll()) {
+				for (int i = 0; i < size; i++) {
+					for (int j = 0; j < size; j++) {
+						satx.makeMove(i, j);
+					}
+				}
+
+				for (int i = centerX; i >= 0; i--) {
+					for (int j = 0; j < size; j++) {
+						satx.makeMove(i, j);
+					}
+				}
+
+				for (int i = centerX; i < size; i++) {
+					for (int j = 0; j < size; j++) {
+						satx.makeMove(i, j);
+					}
+				}
+
+				int newCounter = satx.getTotalCount();
+
+				// check if no cells are uncovered
+				if (newCounter == counter) {
+					//TODO SAT solver
+				} else {
+					counter = newCounter;
+				}
+			}
+
+			satx.checkIfWin(); //check if won the game
+
+			System.out.print("\nGame end!\nResult : ");
+
+			// check if win the game
+			if (satx.win) {
+				System.out.println("Game won!");
+			} else {
+				System.out.println("Game lost!");
+			}
 
 		} else {
 			printErrorMessageForInvalidAgentType(agentType);
