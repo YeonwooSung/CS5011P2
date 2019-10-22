@@ -166,21 +166,6 @@ public abstract class Agent {
 		return numOfFlags;
 	}
 
-	int countNumberOfNeighbouredFlags(Coordinate[] neighbours, boolean b) {
-		int numOfFlags = 0;
-
-		for (int i = 0; i < neighbours.length; i++) {
-			Coordinate coord = neighbours[i];
-			// use if-else statement to check if the given coordinate is inspected
-			if (this.isInspected(coord.getX(), coord.getY()) && flag[coord.getY()][coord.getX()]) {
-				System.out.println(">?> " + coord.getX() + ", " + coord.getY());
-				numOfFlags += 1;
-			}
-		}
-
-		return numOfFlags;
-	}
-
 	int getAllFreeOrMakredNeighbours(Coordinate[] neighbours, ArrayList<Coordinate> probedCoords, ArrayList<Coordinate> uninspected) {
 		int numOfFlags = 0;
 

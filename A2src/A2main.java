@@ -1,5 +1,9 @@
 import java.util.ArrayList;
 
+import org.logicng.io.parsers.ParserException;
+import org.sat4j.specs.ContradictionException;
+import org.sat4j.specs.TimeoutException;
+
 public class A2main {
 	private static void printErrorMessageForInvalidID(String id) {
 		System.out.println("Invalid ID - " + id);
@@ -168,7 +172,7 @@ public class A2main {
 		return world;
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws ParserException, TimeoutException, ContradictionException {
 		if (args.length < 2) {
 			System.out.println("Usage: java A2main <RPX|SPX|SATX> <ID> [any param]");
 			System.exit(0);
@@ -180,6 +184,7 @@ public class A2main {
 		Board board = new Board(world.map);
 
 		int size = world.map.length;
+		int total = size * size;
 
 		/* use if-else statement to check the agent type */
 
@@ -187,16 +192,27 @@ public class A2main {
 			System.out.println("Randome Probe (RPX)\n");
 			RPX rpx = new RPX(board);
 
-			int total = size * size;
+			int maxVal = size - 1;
+			int minVal = 0;
 			int totalTornados = rpx.getTotalTornados();
+
 			total -= totalTornados; //get the number of non-tornado cells
+
+			int x = minVal;
+			int y = maxVal;
+
+			rpx.makeMove(x, y);
+			total -= 1;
+
+			x = size / 2;
+			y = x;
 
 			// use while loop to loop until the RPX probe all non-tornado cells
 			while (total > 0) {
-				int x = getRandomIntegerBetweenRange(0, size - 1); //get random integer
-				int y = getRandomIntegerBetweenRange(0, size - 1); //get random integer
-
 				rpx.makeMove(x, y);
+
+				x = getRandomIntegerBetweenRange(minVal, maxVal); //get random integer
+				y = getRandomIntegerBetweenRange(minVal, maxVal); //get random integer
 
 				total -= 1;
 			}
@@ -255,15 +271,19 @@ public class A2main {
 						int x = getRandomIntegerBetweenRange(0, size - 1); //get random integer
 						int y = getRandomIntegerBetweenRange(0, size - 1); //get random integer
 
+						if (spx.isInspected(x, y)) {
+							continue;
+						}
+
 						int ret = spx.probeCoordinate(x, y);
 						ArrayList<Coordinate> uninspected = spx.getUninspectedNeighbours(spx.getNeighbours(x, y));
 						spx.probeAndCheckReturnedValue(x, y, ret, uninspected);
 
 						newCounter = spx.getTotalCount();
 					} while (newCounter == counter);
-				} else {
-					counter = newCounter;
 				}
+
+				counter = newCounter;
 			}
 
 			spx.checkIfWin(); //check if won the game
@@ -316,10 +336,31 @@ public class A2main {
 
 				// check if no cells are uncovered
 				if (newCounter == counter) {
-					//TODO SAT solver
-				} else {
-					counter = newCounter;
+					System.out.println("??");
+					satx.makeMoveWithSAT(); // use SAT solver to make a move
+					System.out.println("!!");
+
+					newCounter = satx.getTotalCount();
+
+					if (newCounter == counter) {
+						do {
+							int x = getRandomIntegerBetweenRange(0, size - 1); //get random integer
+							int y = getRandomIntegerBetweenRange(0, size - 1); //get random integer
+
+							if (satx.isInspected(x, y)) {
+								continue;
+							}
+
+							int ret = satx.probeCoordinate(x, y);
+							ArrayList<Coordinate> uninspected = satx.getUninspectedNeighbours(satx.getNeighbours(x, y));
+							satx.probeAndCheckReturnedValue(x, y, ret, uninspected);
+
+							newCounter = satx.getTotalCount();
+						} while (newCounter == counter);
+					}
 				}
+
+				counter = newCounter;
 			}
 
 			satx.checkIfWin(); //check if won the game

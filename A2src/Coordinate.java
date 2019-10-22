@@ -3,10 +3,29 @@ public class Coordinate {
 	private int x;
 	private int y;
 	private boolean inspected;
+	private String name;
 
 	Coordinate(int x, int y) {
 		this.setX(x);
 		this.setY(y);
+
+		name = null;
+	}
+
+	/**
+	 * Setter for name
+	 * @param name
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	/**
+	 * Getter for name.
+	 * @return name
+	 */
+	public String getName() {
+		return name;
 	}
 
 	/**
@@ -63,5 +82,17 @@ public class Coordinate {
 	 */
 	public String getCoordinateString() {
 		return "(" + x + ", " + y + ") - inspected = " + inspected;
+	}
+
+	/**
+	 * Check if the given coordinate is identical with this coordinate.
+	 * @param other - other coordinate
+	 * @return If identical, returns true. Otherwise, returns false.
+	 */
+	public boolean isIdentical(Coordinate other) {
+		if (this.x == other.x && this.y == other.y) {
+			return true;
+		}
+		return false;
 	}
 }
