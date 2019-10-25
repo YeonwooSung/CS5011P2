@@ -7,6 +7,9 @@ public abstract class Agent {
 	private boolean finished;
 
 	protected boolean win;
+	protected boolean hasMultiLife;
+	protected int numOfLifes;
+
 	private int size1;
 	private int size2;
 	protected Board board;
@@ -16,6 +19,7 @@ public abstract class Agent {
 	Agent(Board board) {
 		this.board = board;
 
+		hasMultiLife = false;
 		size1 = board.board.length;
 		size2 = board.board[0].length;
 		probed = new boolean[size1][size2];
@@ -23,6 +27,13 @@ public abstract class Agent {
 
 		total = size1 * size2;
 		totalTornados = this.countNumOfTornados();
+	}
+
+	Agent(Board board, int numOfLifes) {
+		this(board);
+
+		this.numOfLifes = numOfLifes;
+		hasMultiLife = true;
 	}
 
 	/**
@@ -214,6 +225,30 @@ public abstract class Agent {
 		return counter;
 	}
 
+	void checkRemainingLife(int x, int y) {
+		System.out.println("\nThe coordinate (" + x + ", " + y + ") contains the tornado!");
+
+		// check if the current agent object supports the multiple life mode
+		if (hasMultiLife) {
+			numOfLifes -= 1;
+
+			if (numOfLifes < 1) {
+				System.out.println("Game over!");
+				System.exit(1);
+			} else {
+				System.out.println("Multiple life mode - auto flag the current coordinate");
+				System.out.println("Flag " + x + " " + y);
+				probed[y][x] = false;
+				flag[y][x] = true;
+				System.out.println("Remaining lifes = " + numOfLifes);
+				System.out.println();
+			}
+		} else {
+			System.out.println("Game over!");
+			System.exit(1);
+		}
+	}
+
 	/**
 	 * Check if the number of flags is equal to T.
 	 */
@@ -228,6 +263,8 @@ public abstract class Agent {
 			}
 		}
 
+		System.out.println(counter);
+		System.out.println(totalTornados);
 		// compare the total number of tornado and flags
 		if (counter == totalTornados) {
 			win = true;

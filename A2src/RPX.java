@@ -4,6 +4,10 @@ public class RPX extends Agent {
 		super(board);
 	}
 
+	RPX(Board board, int numOfLifes) {
+		super(board, numOfLifes);
+	}
+
 	/**
 	 * Make a move for RPX.
 	 * @param x - current x
@@ -13,7 +17,6 @@ public class RPX extends Agent {
 		try {
 			// check if the given coordinate is already inspected
 			if (!this.isInspected(x, y)) {
-				System.out.print("Current coordinate = (" + x + ", " + y + ")  =>  ");
 
 				// probe the current coordinate
 				int result = this.probeCoordinate(x, y);
@@ -30,9 +33,7 @@ public class RPX extends Agent {
 						System.out.println("Probe " + x + " " + y);
 						break;
 					case -1:
-						System.out.println("The coordinate (" + x + ", " + y + ") contains the tornado!");
-						System.out.println("Game over!");
-						System.exit(1);
+						this.checkRemainingLife(x, y);
 				}
 			}
 		} catch (IndexOutOfBoundsException e) {

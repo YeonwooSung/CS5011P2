@@ -19,6 +19,10 @@ public class SATX extends SPX {
 		super(board);
 	}
 
+	SATX(Board board, int numOfLifes) {
+		super(board, numOfLifes);
+	}
+
 	public void makeMoveWithSAT() throws ParserException, TimeoutException, ContradictionException {
 		literals = new ArrayList<>();
         clauses = new ArrayList<>();
@@ -36,8 +40,9 @@ public class SATX extends SPX {
         this.parseAndBuildDIMACS(kbu);
 
         if (!checkSafeProbe()) {
-        	//TODO
-        	System.out.println("OOOOOOOOOOOOOOOOOOOOO");
+        	// if the SAT solver failed to solve the problem, make a random move
+        	int counter = this.getTotalCount();
+        	this.makeRandomMove(counter);
         }
 	}
 
@@ -139,74 +144,6 @@ public class SATX extends SPX {
         }
 
 		return cnf;
-	}
-
-	/**
-	 * Build propositional logic formula for a given cell.
-	 * @param x - x coordinate
-	 * @param y - y coordinate
-	 * @return Propositional logic string
-	 */
-	private String getCellFormula(int x, int y) {
-		Coordinate[] neighbours = this.getNeighbours(x, y);
-		ArrayList<Coordinate> uninspected = this.getUninspectedNeighbours(neighbours);
-		ArrayList<Coordinate> vars = new ArrayList<Coordinate>();
-
-		for (Coordinate c : uninspected) {
-			boolean found = false;
-
-			for (Coordinate literal : literals) {
-				if (c.isIdentical(literal)) {
-					c.setName(literal.getName());
-					found = true;
-					break;
-				}
-			}
-
-			if (!found) {
-				c.setName("@RESERVED_CNF_" + literals.size());
-				literals.add(c);
-			}
-			vars.add(c);
-		}
-
-		int numberOfVars = vars.size();
-		String[] formulas = new String[numberOfVars];
-		StringBuilder sb;
-
-		/* use nested for loops to generate all possible formulas */
-
-		for (int i = 0; i < numberOfVars; i++) {
-			sb = new StringBuilder();
-
-			for (int j = 0; j < numberOfVars; j++) {
-				if (j != i) {
-					sb.append("~");
-				}
-
-				sb.append(vars.get(j).getName());
-				if (j < numberOfVars-1) {
-					sb.append(" & ");
-				}
-			}
-
-			formulas[i] = sb.toString();
-		}
-
-		sb = new StringBuilder();
-
-		// use for loop to bind all formulas with 'OR' operator
-		for (int i = 0; i < numberOfVars; i++) {
-			sb.append("(");
-            sb.append(formulas[i]);
-            sb.append(")");
-
-            if (i < numberOfVars - 1) {
-            	sb.append(" | ");
-            }
-		}
-
-		return sb.toString();
 	}
 
 	/**
@@ -460,9 +397,7 @@ public class SATX extends SPX {
             // check if the formula is satisfiable
             if (!problem.isSatisfiable()) {
                 System.out.println("Formula is NOT satisfiable - Cell is safe!");
-                flagCell(n);
-
-                return true;
+                return flagCell(n);
             } else {
                 System.out.println("Formula is satisfiable - Cannot be sure if the cell is safe.");
             }
@@ -472,24 +407,28 @@ public class SATX extends SPX {
         return false;
     }
 
+
     /**
      * Extracts cell information from the given literal
      * @param n - literal index
      */
-    private void flagCell(int n) {
+    private boolean flagCell(int n) {
     	Coordinate coord = literals.get(n);
 
     	int x = coord.getX();
     	int y = coord.getY();
 
-    	System.out.println("\nSAT solver - " + x + " " + y);
-    	System.out.println("Probe " + x + " " + y);
     	int result = this.probeCoordinate(x, y);
 
     	if (result == -1) {
-    		System.out.println("The coordinate (" + x + ", " + y + ") contains the tornado!");
-			System.out.println("Game over!");
-			System.exit(1);
+    		probed[y][x] = false;
+    		System.out.println();
+    		return false;
     	}
+
+    	System.out.println("\nSAT solver - " + x + " " + y);
+    	System.out.println("Probe " + x + " " + y);
+
+    	return true;
     }
 }

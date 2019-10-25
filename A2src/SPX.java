@@ -5,6 +5,10 @@ public class SPX extends Agent {
 		super(board);
 	}
 
+	SPX(Board board, int numOfLifes) {
+		super(board, numOfLifes);
+	}
+
 	private boolean checkAllFreeNeighbours(int numOfMarked, int clue) {
 		return (clue == numOfMarked);
 	}
@@ -54,6 +58,26 @@ public class SPX extends Agent {
 		}
 
 		return true;
+	}
+
+	void makeRandomMove(int counter) {
+		int size = board.board.length;
+		int newCounter = this.getTotalCount();
+
+		do {
+			int x = A2main.getRandomIntegerBetweenRange(0, size - 1); //get random integer
+			int y = A2main.getRandomIntegerBetweenRange(0, size - 1); //get random integer
+
+			if (isInspected(x, y)) {
+				continue;
+			}
+
+			int ret = probeCoordinate(x, y);
+			ArrayList<Coordinate> uninspected = this.getUninspectedNeighbours(this.getNeighbours(x, y));
+			probeAndCheckReturnedValue(x, y, ret, uninspected);
+
+			newCounter = this.getTotalCount();
+		} while (newCounter == counter);
 	}
 
 	public void makeMove(int x, int y) {
@@ -169,9 +193,7 @@ public class SPX extends Agent {
 				}
 				break;
 			case -1:
-				System.out.println("The coordinate (" + x + ", " + y + ") contains the tornado!");
-				System.out.println("Game over!");
-				System.exit(1);
+				this.checkRemainingLife(x, y);
 		}
 	}
 }

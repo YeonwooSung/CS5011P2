@@ -1,15 +1,21 @@
-import java.util.ArrayList;
-
 import org.logicng.io.parsers.ParserException;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.TimeoutException;
 
 public class A2main {
+	/**
+	 * Print out the error message for the invalid id error
+	 * @param id - invalid id string
+	 */
 	private static void printErrorMessageForInvalidID(String id) {
 		System.out.println("Invalid ID - " + id);
 		System.exit(0);
 	}
 
+	/**
+	 * Print out the error message for the invalid agent type error.
+	 * @param agent - invalid agent name
+	 */
 	private static void printErrorMessageForInvalidAgentType(String agent) {
 		System.out.println("Invalid Agent - " + agent);
 		System.exit(0);
@@ -21,11 +27,16 @@ public class A2main {
 	 * @param max - maximum value of the range
 	 * @return random integer
 	 */
-	private static int getRandomIntegerBetweenRange(int min, int max){
+	public static int getRandomIntegerBetweenRange(int min, int max){
 	    int x = (int) (Math.random()* ((max - min) + 1)) + min;
 	    return x;
 	}
 
+	/**
+	 * Check the id string, and returns the suitable World instance.
+	 * @param id - id string
+	 * @return Returns the corresponding World object.
+	 */
 	private static World getWorld(String id) {
 		World world = null;
 
@@ -178,13 +189,30 @@ public class A2main {
 			System.exit(0);
 		}
 
+		boolean multipleLife = false;
+
+		if (args.length > 2) {
+			try {
+				int i = Integer.parseInt(args[2]);
+				
+				if (i < 1) {
+					System.out.println("The number of lifes should be an positive integer!");
+					System.exit(0);
+				}
+
+				multipleLife = true;
+			} catch (NumberFormatException e) {
+				System.out.println("Usage: java A2main <RPX|SPX|SATX> <ID> <numberOfLifes>");
+				System.exit(0);
+			}
+		}
+
 		String agentType = args[0];
 
 		World world = getWorld(args[1]);
 		Board board = new Board(world.map);
 
 		int size = world.map.length;
-		int total = size * size;
 
 		/* use if-else statement to check the agent type */
 
@@ -192,29 +220,28 @@ public class A2main {
 			System.out.println("Randome Probe (RPX)\n");
 			RPX rpx = new RPX(board);
 
+			if (multipleLife) {
+				int i = Integer.parseInt(args[2]);
+				rpx = new RPX(board, i);
+			}
+
 			int maxVal = size - 1;
 			int minVal = 0;
-			int totalTornados = rpx.getTotalTornados();
-
-			total -= totalTornados; //get the number of non-tornado cells
 
 			int x = minVal;
 			int y = maxVal;
 
 			rpx.makeMove(x, y);
-			total -= 1;
 
 			x = size / 2;
 			y = x;
 
 			// use while loop to loop until the RPX probe all non-tornado cells
-			while (total > 0) {
+			while (!rpx.inspectedAll()) {
 				rpx.makeMove(x, y);
 
 				x = getRandomIntegerBetweenRange(minVal, maxVal); //get random integer
 				y = getRandomIntegerBetweenRange(minVal, maxVal); //get random integer
-
-				total -= 1;
 			}
 
 			rpx.checkIfWin(); //check if won the game
@@ -231,6 +258,11 @@ public class A2main {
 		} else if (agentType.equals("SPX")) {
 			System.out.println("Single point strategy for hexagonal worlds (SPX)\n");
 			SPX spx = new SPX(board);
+
+			if (multipleLife) {
+				int i = Integer.parseInt(args[2]);
+				spx = new SPX(board, i);
+			}
 
 			int centerX = size / 2;
 			int centerY = centerX;
@@ -267,20 +299,7 @@ public class A2main {
 
 				// check if no cells are uncovered
 				if (newCounter == counter) {
-					do {
-						int x = getRandomIntegerBetweenRange(0, size - 1); //get random integer
-						int y = getRandomIntegerBetweenRange(0, size - 1); //get random integer
-
-						if (spx.isInspected(x, y)) {
-							continue;
-						}
-
-						int ret = spx.probeCoordinate(x, y);
-						ArrayList<Coordinate> uninspected = spx.getUninspectedNeighbours(spx.getNeighbours(x, y));
-						spx.probeAndCheckReturnedValue(x, y, ret, uninspected);
-
-						newCounter = spx.getTotalCount();
-					} while (newCounter == counter);
+					spx.makeRandomMove(counter);
 				}
 
 				counter = newCounter;
@@ -300,6 +319,11 @@ public class A2main {
 		} else if (agentType.equals("SATX")) {
 			System.out.println("Satisfiability Strategy for hexagonal worlds (SATX)\n");
 			SATX satx = new SATX(board);
+
+			if (multipleLife) {
+				int i = Integer.parseInt(args[2]);
+				satx = new SATX(board, i);
+			}
 
 			int centerX = size / 2;
 			int centerY = centerX;
@@ -336,27 +360,12 @@ public class A2main {
 
 				// check if no cells are uncovered
 				if (newCounter == counter) {
-					System.out.println("??");
 					satx.makeMoveWithSAT(); // use SAT solver to make a move
-					System.out.println("!!");
 
 					newCounter = satx.getTotalCount();
 
 					if (newCounter == counter) {
-						do {
-							int x = getRandomIntegerBetweenRange(0, size - 1); //get random integer
-							int y = getRandomIntegerBetweenRange(0, size - 1); //get random integer
-
-							if (satx.isInspected(x, y)) {
-								continue;
-							}
-
-							int ret = satx.probeCoordinate(x, y);
-							ArrayList<Coordinate> uninspected = satx.getUninspectedNeighbours(satx.getNeighbours(x, y));
-							satx.probeAndCheckReturnedValue(x, y, ret, uninspected);
-
-							newCounter = satx.getTotalCount();
-						} while (newCounter == counter);
+						satx.makeRandomMove(counter);
 					}
 				}
 
