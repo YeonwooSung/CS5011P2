@@ -170,6 +170,28 @@ public class A2main {
 						default:
 							printErrorMessageForInvalidID(id);
 					}
+				} else if (id.startsWith("T")) {
+					String subStr = id.substring(1);
+					int i = Integer.parseInt(subStr);
+
+					// use switch statement to generate suitable world instance
+					switch (i) {
+						case 1:
+							world = World.T1;
+							break;
+						case 2:
+							world = World.T2;
+							break;
+						case 3:
+							world = World.T3;
+							break;
+						case 4:
+							world = World.T4;
+							break;
+						default:
+							printErrorMessageForInvalidID(id);
+					}
+
 				} else {
 					printErrorMessageForInvalidID(id);
 				}

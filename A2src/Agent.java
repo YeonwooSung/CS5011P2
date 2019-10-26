@@ -27,6 +27,15 @@ public abstract class Agent {
 
 		total = size1 * size2;
 		totalTornados = this.countNumOfTornados();
+
+		// check the blank cells
+		for (int i = 0; i < board.board.length; i++) {
+			for (int j = 0; j < board.board[i].length; j++) {
+				if (board.board[i][j] == 'b') {
+					probed[i][j] = true;
+				}
+			}
+		}
 	}
 
 	Agent(Board board, int numOfLifes) {
@@ -263,8 +272,6 @@ public abstract class Agent {
 			}
 		}
 
-		System.out.println(counter);
-		System.out.println(totalTornados);
 		// compare the total number of tornado and flags
 		if (counter == totalTornados) {
 			win = true;

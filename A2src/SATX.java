@@ -254,8 +254,6 @@ public class SATX extends SPX {
 			}
 		}
 
-		System.out.println("num = " + num);
-		System.out.println("r = " + r);
 		System.out.println(sb.toString());
 		System.out.println();
 		return sb.toString();
