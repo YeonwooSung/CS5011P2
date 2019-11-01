@@ -39,6 +39,7 @@ public class A2main {
 	 */
 	private static World getWorld(String id) {
 		World world = null;
+		System.out.println(id);
 
 		// use if - else statement to validate the world ID
 		if (id.startsWith("TEST")) {

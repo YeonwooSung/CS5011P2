@@ -23,6 +23,12 @@ public class SATX extends SPX {
 		super(board, numOfLifes);
 	}
 
+	/**
+	 * Uses the SAT solver to make a new move.
+	 * @throws ParserException
+	 * @throws TimeoutException
+	 * @throws ContradictionException
+	 */
 	public void makeMoveWithSAT() throws ParserException, TimeoutException, ContradictionException {
 		literals = new ArrayList<>();
         clauses = new ArrayList<>();
@@ -63,7 +69,10 @@ public class SATX extends SPX {
                 if (this.probed[i][j] && current != '0') {
                 	String formula = generateCellFormula(j, i).trim();
 
-                	// check if the generated formula is an empty string
+                	/*
+                	 * Check if the generated formula is an empty string.
+                	 * The empty clause might
+                	 */
                 	if (formula.isEmpty() || formula.equals("") || formula.matches("\\s+")) {
                 		checker = true;
                 		continue;
@@ -73,8 +82,10 @@ public class SATX extends SPX {
             }
         }
 
+		//TODO is "checker" necessary?
 		if (formulas.size() == 0 || checker) {
-			return null;
+			//System.out.println("????????????????????????????????");
+			//return null;
 		}
 
 		StringBuilder sb = new StringBuilder();
@@ -93,6 +104,7 @@ public class SATX extends SPX {
         }
 
         String kbu = sb.toString();
+        System.out.println(kbu);
 
         /* Use LogicNG to convert KBU to CNF */
 
@@ -100,7 +112,7 @@ public class SATX extends SPX {
         PropositionalParser p = new PropositionalParser(f);
         Formula formula = p.parse(kbu);
 
-        //Convert KBU to CNF
+        // Convert KBU to CNF
         String cnf = formula.cnf().toString();
 
         System.out.println("Unique Literals: ");
@@ -119,6 +131,7 @@ public class SATX extends SPX {
 
         boolean buildingLiteral = false;
 
+        // use for loop to make the format of the CNF to DIMACS
         for (int i = 0; i < cnf.length(); i++) {
         	char currentChar = cnf.charAt(i);
             if (currentChar == '@') {
@@ -254,9 +267,8 @@ public class SATX extends SPX {
 			}
 		}
 
-		System.out.println(sb.toString());
-		System.out.println();
-		return sb.toString();
+		System.out.println(sb.toString().trim());
+		return sb.toString().trim();
 	}
 
 	/**
@@ -321,7 +333,11 @@ public class SATX extends SPX {
 
                 } else if (currentChar == ' ') {
                     if (!ignoreSpace) {
-                        int literal = Integer.parseInt(sb.toString()) * negative;
+                    	String literalStr = sb.toString().trim();
+                    	if (literalStr.startsWith("@RESERVED_CNF_")) {
+                    		literalStr = literalStr.replace("@RESERVED_CNF_", "");
+                    	}
+                        int literal = Integer.parseInt(literalStr) * negative;
 
                         clause.add(literal);
 
@@ -332,7 +348,12 @@ public class SATX extends SPX {
                     ignoreSpace = false;
                     inClause = false;
 
-                    int literal = Integer.parseInt(sb.toString()) * negative;
+                    String literalStr = sb.toString().trim();
+                	if (literalStr.startsWith("@RESERVED_CNF_")) {
+                		literalStr = literalStr.replace("@RESERVED_CNF_", "");
+                	}
+
+                    int literal = Integer.parseInt(literalStr) * negative;
 
                     clause.add(literal);
                     clauses.add(clause);
@@ -342,7 +363,12 @@ public class SATX extends SPX {
                     if (!ignoreSpace) {
                         ignoreSpace = true;
                     } else {
-                        int literal = Integer.parseInt(sb.toString()) * negative;
+                    	String literalStr = sb.toString().trim();
+                    	if (literalStr.startsWith("@RESERVED_CNF_")) {
+                    		literalStr = literalStr.replace("@RESERVED_CNF_", "");
+                    	}
+
+                        int literal = Integer.parseInt(literalStr) * negative;
 
                         clause.add(literal);
 
@@ -401,7 +427,7 @@ public class SATX extends SPX {
             }
         }
 
-        System.out.println("The SAT solver cannot be certain any cell is safe. Must resort to random probe.\n");
+        System.out.println("The SAT solver cannot be certain any cell is safe. Must resort to random probe.");
         return false;
     }
 
@@ -420,11 +446,12 @@ public class SATX extends SPX {
 
     	if (result == -1) {
     		probed[y][x] = false;
-    		System.out.println();
+    		flag[y][x] = true;
+    		System.out.println("Flag " + x + " " + y);
     		return false;
     	}
 
-    	System.out.println("\nSAT solver - " + x + " " + y);
+    	System.out.println("SAT solver - " + x + " " + y);
     	System.out.println("Probe " + x + " " + y);
 
     	return true;
