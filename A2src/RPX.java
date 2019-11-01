@@ -1,4 +1,7 @@
-
+/**
+ * Class for RPX.
+ * @author 160021429
+ */
 public class RPX extends Agent {
 	RPX(Board board) {
 		super(board);

@@ -2,6 +2,10 @@ import org.logicng.io.parsers.ParserException;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.TimeoutException;
 
+/**
+ * Main class.
+ * @author 160021429
+ */
 public class A2main {
 	/**
 	 * Print out the error message for the invalid id error

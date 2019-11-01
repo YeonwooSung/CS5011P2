@@ -11,6 +11,10 @@ import org.sat4j.specs.IProblem;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.TimeoutException;
 
+/**
+ * The class for SATX.
+ * @author 160021429
+ */
 public class SATX extends SPX {
 	private ArrayList<Coordinate> literals;
 	private ArrayList<ArrayList<Integer>> clauses;
@@ -60,7 +64,6 @@ public class SATX extends SPX {
 	private String buildKBU() throws ParserException {
 		ArrayList<String> formulas = new ArrayList<>();
 		char[][] map = board.board;
-		boolean checker = false;
 
 		for (int i = 0; i < map.length; i++) {
             for (int j = 0; j < map[0].length; j++) {
@@ -74,7 +77,6 @@ public class SATX extends SPX {
                 	 * The empty clause might
                 	 */
                 	if (formula.isEmpty() || formula.equals("") || formula.matches("\\s+")) {
-                		checker = true;
                 		continue;
                 	}
                 	formulas.add(formula);
@@ -82,10 +84,12 @@ public class SATX extends SPX {
             }
         }
 
-		//TODO is "checker" necessary?
-		if (formulas.size() == 0 || checker) {
-			//System.out.println("????????????????????????????????");
-			//return null;
+		/*
+		 * The EmptyClauseException might occur if the formula is empty.
+		 * This might happen if there is a contradiction in the logic.
+		 */
+		if (formulas.size() == 0) {
+			return null;
 		}
 
 		StringBuilder sb = new StringBuilder();

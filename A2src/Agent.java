@@ -1,6 +1,9 @@
 import java.util.ArrayList;
 
-
+/**
+ * The abstract class for logical agents.
+ * @author 160021429
+ */
 public abstract class Agent {
 	protected int total;
 	private int totalTornados;
@@ -128,6 +131,13 @@ public abstract class Agent {
 		}
 	}
 
+	/**
+	 * Check if the given coordinate is either probed or flagged.
+	 * @param x - x coordinate
+	 * @param y - y cooridnate
+	 * @return If the given coordinate is either probed or flagged, returns true. Otherwise, returns false.
+	 * @throws IndexOutOfBoundsException
+	 */
 	boolean isInspected(int x, int y) throws IndexOutOfBoundsException {
 		return probed[y][x] || flag[y][x];
 	}
@@ -234,6 +244,11 @@ public abstract class Agent {
 		return counter;
 	}
 
+	/**
+	 * Check the remaining lives for the multi-lives mode.
+	 * @param x - x coordinate of the current node.
+	 * @param y - y cooridnate of the current node.
+	 */
 	void checkRemainingLife(int x, int y) {
 		System.out.println("\nThe coordinate (" + x + ", " + y + ") contains the tornado!");
 

@@ -1,5 +1,9 @@
 import java.util.ArrayList;
 
+/**
+ * The class for SPX.
+ * @author 160021429
+ */
 public class SPX extends Agent {
 	SPX(Board board) {
 		super(board);
@@ -9,14 +13,34 @@ public class SPX extends Agent {
 		super(board, numOfLifes);
 	}
 
+	/**
+	 * This method helps the SPX to check the AFN.
+	 * @param numOfMarked - the number of marked neighbours
+	 * @param clue - the clue
+	 * @return If it is AFN, returns true. Otherwise, returns false.
+	 */
 	private boolean checkAllFreeNeighbours(int numOfMarked, int clue) {
 		return (clue == numOfMarked);
 	}
 
+	/**
+	 * This method helps the SPX to check the AMN.
+	 * @param numOfMarked - the number of marked neighbours
+	 * @param clue - the clue
+	 * @param numOfUninspected - the number of un-inspected neighbours
+	 * @return If it is AMN, returns true. Otherwise, returns false.
+	 */
 	private boolean checkAllMarkedNeighbours(int numOfMarked, int clue, int numOfUninspected) {
 		return (clue - numOfMarked == numOfUninspected);
 	}
 
+	/**
+	 * Iterate the neighboured nodes to check if any of them are either AFN or AMN.
+	 * @param probedCoords - list of neighboured nodes
+	 * @param x - x coordinate
+	 * @param y - y coordinate
+	 * @return If all nodes are neither AMN nor AFN, returns true. Otherwise, returns false.
+	 */
 	private boolean checkNeighbours(ArrayList<Coordinate> probedCoords, int x, int y) {
 		for (Coordinate coord : probedCoords) {
 			int x1 = coord.getX();
@@ -60,6 +84,10 @@ public class SPX extends Agent {
 		return true;
 	}
 
+	/**
+	 * This method makes a random guesses.
+	 * @param counter
+	 */
 	void makeRandomMove(int counter) {
 		int size = board.board.length;
 		int newCounter = this.getTotalCount();
@@ -80,6 +108,11 @@ public class SPX extends Agent {
 		} while (newCounter == counter);
 	}
 
+	/**
+	 * This method makes a move by using single point strategy.
+	 * @param x - x coordinate
+	 * @param y - y coordinate
+	 */
 	public void makeMove(int x, int y) {
 		try {
 			if (!this.isInspected(x, y)) {

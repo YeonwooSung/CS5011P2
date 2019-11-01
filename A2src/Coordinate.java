@@ -1,4 +1,7 @@
-
+/**
+ * The class that stores the information about the cells.
+ * @author 160021429
+ */
 public class Coordinate {
 	private int x;
 	private int y;
