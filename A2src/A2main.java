@@ -39,7 +39,6 @@ public class A2main {
 	 */
 	private static World getWorld(String id) {
 		World world = null;
-		System.out.println(id);
 
 		// use if - else statement to validate the world ID
 		if (id.startsWith("TEST")) {
@@ -208,7 +207,7 @@ public class A2main {
 
 	public static void main(String[] args) throws ParserException, TimeoutException, ContradictionException {
 		if (args.length < 2) {
-			System.out.println("Usage: java A2main <RPX|SPX|SATX> <ID> [any param]");
+			System.out.println("Usage: java -cp .:\\* A2main <RPX|SPX|SATX> <ID> [any param]");
 			System.exit(0);
 		}
 
@@ -225,7 +224,7 @@ public class A2main {
 
 				multipleLife = true;
 			} catch (NumberFormatException e) {
-				System.out.println("Usage: java A2main <RPX|SPX|SATX> <ID> <numberOfLifes>");
+				System.out.println("Usage: java -cp .:\\* A2main <RPX|SPX|SATX> <ID> <numberOfLifes>");
 				System.exit(0);
 			}
 		}

@@ -366,7 +366,7 @@ public enum World {
 		
 
 
-	 	//********************* Triangular
+	 	//********************* Triangular - 'b' for blank
 	 	T1(new char[][] {
 			{'0','b','b','b','b'},
 			{'0','0','b','b','b'},
